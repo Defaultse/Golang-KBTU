@@ -14,6 +14,14 @@ type DB struct {
 	mu *sync.RWMutex
 }
 
+func (db *DB) Connect(url string) error {
+	panic("implement me")
+}
+
+func (db *DB) Close() error {
+	panic("implement me")
+}
+
 func NewDB() store.Store {
 	return &DB{
 		mu: new(sync.RWMutex),

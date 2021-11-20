@@ -3,6 +3,7 @@ package http
 import (
 	"api/internal/store"
 	"context"
+	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"log"
 	"net/http"
 	"time"
@@ -14,18 +15,22 @@ type Server struct {
 	ctx         context.Context
 	idleConnsCh chan struct{}
 	store       store.Store
+	es esapi.Info
 
 	Address string
 }
 
-func NewServer(ctx context.Context, address string, store store.Store) *Server {
-	return &Server{
+func NewServer(ctx context.Context, opts ...ServerOption) *Server {
+	srv := &Server{
 		ctx:         ctx,
 		idleConnsCh: make(chan struct{}),
-		store:       store,
-
-		Address: address,
 	}
+
+	for _, opt := range opts {
+		opt(srv)
+	}
+
+	return srv
 }
 
 func (s *Server) basicHandler() chi.Router {

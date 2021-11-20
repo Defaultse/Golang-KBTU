@@ -1,10 +1,9 @@
 package postgres
 
 import (
+	_ "github.com/jackc/pgx/stdlib"
 	"api/internal/store"
-	"fmt"
-    "github.com/jmoiron/sqlx"
-	"os"
+	"github.com/jmoiron/sqlx"
 )
 
 type DB struct {
@@ -21,8 +20,9 @@ func NewDB() store.Store {
 func (db *DB) Connect(url string) error{
 	conn, err := sqlx.Connect("pgx", url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+		//fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		//os.Exit(1)
+		return err
 	}
 
 	if err := conn.Ping(); err != nil {
@@ -37,7 +37,7 @@ func (db *DB) Close() error{
 	return db.conn.Close()
 }
 
-func (D DB) Feedback() store.FeedbackRepository {
+func (db DB) Feedback() store.FeedbackRepository {
 	panic("implement me")
 }
 

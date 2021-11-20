@@ -4,6 +4,8 @@ import (
 	"api/internal/http"
 	"api/internal/store/postgres"
 	"context"
+	"github.com/elastic/go-elasticsearch/v8"
+	"log"
 )
 
 func main() {
@@ -25,7 +27,26 @@ func main() {
 	}
 	defer store.Close()
 
-	srv := http.NewServer(context.Background(), ":8000", store)
+	//elasticsearch connection
+	es, err := elasticsearch.NewDefaultClient()
+	if err != nil {
+		log.Fatalf("Error creating the client: %s", err)
+	}
+	log.Println(elasticsearch.Version)
+
+	res, err := es.Info()
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+
+	srv := http.NewServer(
+		context.Background(),
+		http.WithAddress("8000"),
+		http.WithStore(store),
+		//http.WithElastic(res),
+		)
 	if err := srv.Run(); err != nil {
 		panic(err)
 	}
