@@ -3,7 +3,6 @@ package http
 import (
 	"api/internal/store"
 	"context"
-	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"log"
 	"net/http"
 	"time"
@@ -15,7 +14,7 @@ type Server struct {
 	ctx         context.Context
 	idleConnsCh chan struct{}
 	store       store.Store
-	es esapi.Info
+	//es esapi.Info
 
 	Address string
 }

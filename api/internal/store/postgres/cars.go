@@ -4,6 +4,7 @@ import (
 	"api/internal/models"
 	"api/internal/store"
 	"context"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -26,7 +27,7 @@ func NewCarsRepository(conn *sqlx.DB) store.CarsRepository {
 // CRUD
 
 func (c CarsRepository) Create(ctx context.Context, car *models.Car) error {
-	_, err := c.conn.Exec("INSERT INTO cars VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", car.OwnerId, car.Type, car.Brand, car.Model, car.Year, car.EngineCapacity, car.Description, car.Price, car.Available)
+	_, err := c.conn.Exec("INSERT INTO cars VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", car.OwnerId, car.VehicleType, car.Brand, car.Model, car.Year, car.EngineCapacity, car.Description, car.Price, car.Available)
 	if err != nil {
 		return err
 	}
@@ -34,9 +35,22 @@ func (c CarsRepository) Create(ctx context.Context, car *models.Car) error {
 	return nil
 }
 
-func (c CarsRepository) All(ctx context.Context) ([]*models.Car, error) {
+func (c CarsRepository) All(ctx context.Context, filter *models.CarsFilter) ([]*models.Car, error) {
 	cars := make([]*models.Car, 0)
-	if err := c.conn.Select(&cars, "SELECT * FROM cars"); err != nil {
+	basicQuery := "SELECT * FROM cars"
+
+	if filter.Query != nil {
+		basicQuery = fmt.Sprintf("%s WHERE description ilike $1", basicQuery)
+
+		if err := c.conn.Select(&cars, basicQuery, "%"+*filter.Query+"%"); err != nil {
+			return nil, err
+		}
+
+		return cars, nil
+	}
+
+
+	if err := c.conn.Select(&cars, basicQuery); err != nil {
 		return nil, err
 	}
 

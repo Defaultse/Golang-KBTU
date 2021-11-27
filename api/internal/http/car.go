@@ -23,7 +23,14 @@ func (s *Server) createCar(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getAllCars(w http.ResponseWriter, r *http.Request) {
-	cars, err := s.store.Cars().All(r.Context())
+	queryValues := r.URL.Query()
+	filter := &models.CarsFilter{}
+
+	if searchQuery := queryValues.Get("query"); searchQuery != "" {
+		filter.Query = &searchQuery
+	}
+
+	cars, err := s.store.Cars().All(r.Context(), filter)
 	if err != nil {
 		fmt.Fprintf(w, "Unknown err: %v", err)
 		return
