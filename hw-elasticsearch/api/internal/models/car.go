@@ -14,14 +14,20 @@ type (
 	Price          int     `json:"price" db:"price"`
 	}
 
-	RentTypes struct {
+	FullCar struct {
 		ID      int    `json:"id" db:"id"`
-		RentTypes string `json:"rent_type" db:"rent_type"`
+		OwnerId int    `json:"owner_id" db:"owner_id"`
+		RentType    string   `json:"rent_type" db:"rent_type"`
+		CarType    string   `json:"car_type" db:"car_type"`
+		Brand string `json:"brand" db:"brand"`
+		Model   string `json:"model" db:"model"`
+		Color   string    `json:"color" db:"color"`
+		Year           int     `json:"year" db:"year"`
+		EngineCapacity float32 `json:"engine_capacity" db:"engine_capacity"`
+		Description    string  `json:"description" db:"description"`
+		Price          int     `json:"price" db:"price"`
 	}
 
-	CarsFilter struct {
-		Query *string `json:"query"`
-	}
 
 )
 

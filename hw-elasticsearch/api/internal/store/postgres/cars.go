@@ -140,9 +140,9 @@ func (c CarsRepository) Create(ctx context.Context, car *models.Car) error {
 	return nil
 }
 
-func (c CarsRepository) All(ctx context.Context) ([]*models.Car, error) {
-	cars := make([]*models.Car, 0)
-	if err := c.conn.Select(&cars, "SELECT * FROM cars"); err != nil {
+func (c CarsRepository) All(ctx context.Context) ([]*models.FullCar, error) {
+	cars := make([]*models.FullCar, 0)
+	if err := c.conn.Select(&cars, "SELECT * FROM get_full_cars"); err != nil {
 		return nil, err
 	}
 
