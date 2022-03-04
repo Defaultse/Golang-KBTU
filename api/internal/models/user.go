@@ -3,14 +3,7 @@ package models
 type User struct {
 	ID          int    `json:"id" db:"id"`
 	Username    string `json:"username" db:"username"`
-	Role        Role   `json:"role" db:"role"`
 	Email       string `json:"email" db:"email"`
-	PhoneNumber string `json:"phoneNumber" db:"phoneNumber"`
+	PhoneNumber string `json:"phonenumber" db:"phonenumber"`
+	Password string `json:"password_hash" db:"password_hash"`
 }
-
-type Role int
-
-const (
-	Owner Role = iota
-	Client
-)

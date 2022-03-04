@@ -4,27 +4,11 @@ import (
 	"api/internal/models"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"net/http"
+	"strconv"
 )
-
-func (s *Server) createUser(w http.ResponseWriter, r *http.Request) {
-	user := new(models.User)
-	if err := json.NewDecoder(r.Body).Decode(user); err != nil {
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		fmt.Fprintf(w, "Unknown err: %v", err)
-		return
-	}
-
-	if err := s.store.User().Create(r.Context(), user); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "DB err: %v", err)
-		return
-	}
-}
 
 func (s *Server) getAllUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := s.store.User().All(r.Context())

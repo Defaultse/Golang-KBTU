@@ -3,6 +3,8 @@ package http
 import (
 	"api/internal/store"
 	"context"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/go-redis/cache/v8"
 	"log"
 	"net/http"
 	"time"
@@ -14,7 +16,8 @@ type Server struct {
 	ctx         context.Context
 	idleConnsCh chan struct{}
 	store       store.Store
-	//es esapi.Info
+	es *elasticsearch.Client
+	mycache *cache.Cache
 
 	Address string
 }
@@ -32,16 +35,33 @@ func NewServer(ctx context.Context, opts ...ServerOption) *Server {
 	return srv
 }
 
+
 func (s *Server) basicHandler() chi.Router {
 	r := chi.NewRouter()
 
-	r.Post("/cars", s.createCar)
-	r.Get("/cars", s.getAllCars)
-	r.Get("/cars/{id}", s.getCarById)
-	r.Put("/cars", s.updateCar)
-	r.Delete("/cars/{id}", s.deleteCarByid)
+	r.Group(func(r chi.Router) {
+		r.Route("/cars", func(r chi.Router) {
+			r.Get("/", s.getAllCars)
+			r.Get("/top", s.getTopList)
+			r.Get("/{brand}",s.listByBrand)
+			r.Get("/{brand}/{model}", s.listByBrandAndModel)
+			r.Get("/show/{id}", s.getCarById)
+			r.Post("/", s.createCar)
+			r.Put("/", s.updateCar)
+			r.Delete("/{id}", s.deleteCarByid)
+		})
+	})
 
-	r.Post("/user", s.createUser)
+	//r.Get("/cars?description={d}", s.elasticGetByDescription)
+	//r.Post("/cars", s.createCar)
+	//r.Get("/cars/{brand}", s.listByBrand)
+	//r.Get("/cars/{brand}/{model}", s.listByBrandAndModel)
+	//r.Get("/car/show/{id}", s.getCarById)
+	//r.Put("/cars", s.updateCar)
+	//r.Delete("/car/delete/{id}", s.deleteCarByid)
+
+	r.Post("/user/register", s.registration)
+	r.Post("/user/login", s.login)
 	r.Get("/users", s.getAllUsers)
 	r.Get("/user/{id}", s.getUserById)
 	r.Put("/user", s.updateUser)
